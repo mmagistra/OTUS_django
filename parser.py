@@ -77,6 +77,10 @@ The program looks for links to new sites and displays all unique cases.''')
 
 
 # settings
+
+# main_url = 'https://tumen.biskvitdvor.ru'
+# depth = 2
+
 BAN_LINKS = (
     'https://twitter.com',
 )
@@ -88,8 +92,6 @@ headers = {
    "Accept": st_accept,
    "User-Agent": st_useragent
 }
-main_url = 'https://tumen.biskvitdvor.ru'
-depth = 2
 
 # code
 find_sites()
