@@ -1,0 +1,7 @@
+Эта часть - краткое описание того, что нужно будет сделать в следующих 2-х заданиях
+
+Blog about board games
+
+All authorized users can post here anything what they want
+
+For easier orientating there are tags on the site. Tags can be: 'game: *boardgame name*', 'news', 'meeting'
