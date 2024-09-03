@@ -9,7 +9,7 @@ from .post import Post
 class User(Base):
     __tablename__ = 'users'
     username: Mapped[str] = mapped_column(String(32), unique=True, nullable=False)
-    password: Mapped[str] = mapped_column()
+    hashed_password: Mapped[str] = mapped_column(nullable=False)
 
     posts: Mapped[List[Post]] = relationship()
 

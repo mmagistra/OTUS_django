@@ -2,7 +2,7 @@ import csv
 import io
 from typing import Annotated
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import EmailStr
 
 from contextlib import asynccontextmanager
@@ -17,7 +17,9 @@ from routers.about.views import router as about_router
 from routers.home.views import router as home_router
 from routers.profile.views import router as profile_router
 from routers.login.views import router as login_router
-# from api import router as api_router
+from routers.api.views import router as api_router
+from routers.new_article.views import router as new_article_router
+from routers.article.views import router as article_router
 
 
 @asynccontextmanager
@@ -36,7 +38,25 @@ app.include_router(about_router)
 app.include_router(home_router)
 app.include_router(login_router)
 app.include_router(profile_router)
-# app.include_router(api_router)
+app.include_router(api_router)
+app.include_router(new_article_router)
+app.include_router(article_router)
+
+
+@app.middleware("http")
+async def add_bearer_header(request: Request, call_next):
+    try:
+        access_token = request.cookies['access_token']
+        request.headers.__dict__["_list"].append(
+            (
+                "authorization".encode(),
+                f"Bearer {access_token}".encode(),
+            )
+        )
+    except KeyError:
+        pass
+    response = await call_next(request)
+    return response
 
 
 @app.get("/hello/", tags=['Test'])

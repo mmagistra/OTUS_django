@@ -247,3 +247,4 @@ local_debug/
 /.idea/vcs.xml
 /.coverage
 /.idea/codeStyles/codeStyleConfig.xml
+**/*.env

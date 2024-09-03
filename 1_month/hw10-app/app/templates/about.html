@@ -9,7 +9,11 @@
         crossorigin="anonymous">
   <title>All articles</title>
 </head>
+{% if is_light_theme %}
+<body>
+{% else %}
 <body data-bs-theme="dark">
+{% endif %}
 {% include "nav.html" %}
 <div class="container-xl my-5">
   <h4 class="text-center">

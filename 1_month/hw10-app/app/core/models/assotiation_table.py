@@ -1,11 +1,11 @@
-from sqlalchemy import Table, ForeignKey, Column
+from sqlalchemy import Table, ForeignKey, Column, Integer
 
 from .base import Base
 
-
-association_table = Table(
+AssociationTable = Table(
     "association_table",
     Base.metadata,
-    Column("post_id", ForeignKey("posts.id"), primary_key=True),
-    Column("tag_id", ForeignKey("tags.id"), primary_key=True),
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("post_id", ForeignKey("posts.id")),
+    Column("tag_id", ForeignKey("tags.id")),
 )

@@ -9,52 +9,88 @@
         crossorigin="anonymous">
   <title>All articles</title>
 </head>
+{% if is_light_theme %}
+<body>
+{% else %}
 <body data-bs-theme="dark">
+{% endif %}
 {% include "nav.html" %}
 <div class="container-xl my-5">
   <div class="row justify-content-evenly">
     <div class="card text-center col">
-      <h5 class="card-header">Article's title</h5>
+      <h5 class="card-header">{{ article.title }}</h5>
       <div class="card-body">
-        <p class="card-subtitle mb-3 text-body-secondary">Article's subtitle</p>
-        <p class="card-text text-start">
-          Article's text:
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ullamcorper, ipsum sit amet auctor vulputate,
-          orci nisi finibus metus, quis consequat massa turpis sed tortor. Class aptent taciti sociosqu ad litora
-          torquent per conubia nostra, per inceptos himenaeos. Phasellus sollicitudin lectus vitae libero placerat, ac
-          lobortis orci accumsan. Aenean quis augue fermentum, vehicula tellus nec, aliquet risus. Lorem ipsum dolor sit
-          amet, consectetur adipiscing elit. Aenean et aliquet nibh, nec pellentesque dui. Fusce porta fermentum ligula
-          eu euismod. Duis placerat turpis nec vestibulum sollicitudin. Duis porttitor viverra convallis. Phasellus
-          euismod risus vel turpis ornare pharetra. Nunc egestas sollicitudin ipsum id sollicitudin.
-          <br>
-
-          Fusce vel venenatis risus. Nam est purus, sagittis sit amet velit ac, consequat ullamcorper nisl. Aenean sed
-          lacinia neque. Proin dictum imperdiet nibh vulputate lobortis. Donec nec vestibulum metus. Vivamus efficitur,
-          dolor sed suscipit pharetra, est enim faucibus odio, eu venenatis nunc metus eget neque. Nulla facilisi. Proin
-          pharetra venenatis consectetur. Curabitur efficitur mauris quis sapien tincidunt maximus. Nullam iaculis, diam
-          a mattis faucibus, ipsum lorem consequat metus, at suscipit risus nunc a neque. Mauris volutpat consequat
-          convallis. Sed placerat volutpat mi quis mattis.
-          <br>
-          Praesent porttitor ac diam ultricies convallis. Nullam suscipit gravida maximus. Sed maximus fermentum dolor
-          quis finibus. Nulla nec dapibus nisi, eget sollicitudin lectus. Sed interdum venenatis odio. Nullam in sem a
-          tellus posuere vulputate non eu sapien. In pretium ornare orci, id iaculis eros eleifend vel. Sed vel
-          malesuada nisi, vitae vestibulum ligula. Suspendisse ornare sed felis id bibendum. Suspendisse mauris enim,
-          venenatis pretium facilisis ut, pellentesque et metus. Quisque dolor arcu, scelerisque eget purus at, viverra
-          facilisis diam. Curabitur vel leo sagittis, iaculis augue at, dapibus neque. Cras non consectetur dui. Proin
-          aliquam, sapien a feugiat ornare, orci risus volutpat tellus, eget pharetra sem libero et diam. Aenean a
-          euismod magna, faucibus tristique sem.
-          <br>
-        </p>
+        <p class="card-subtitle mb-3 text-body-secondary">{{ article.subtitle }}</p>
+        <p class="card-text text-start">{{ article.text }}</p>
       </div>
       <div class="card-footer text-body-secondary">
-        2 days ago
+        {{ article.date }} ago by {{ article.author }}
       </div>
+    </div>
+  </div>
+  <div class="row d-flex justify-content-between">
+    <div class="col-4 mt-3">
+      {% for tag in article.tags %}
+        <span class="badge rounded-pill text-bg-info mx-1 fs-6">
+          {{ tag.name }}
+        </span>
+      {% endfor %}
+    </div>
+    <div class="col mt-3 text-end d-flex justify-content-end">
+      {% if is_author %}
+        <form action="../../api/article/delete/" method="POST" id="delete_post_form">
+          <button type="submit"
+                  class="btn btn-outline-danger btn-{{ 'light' if is_light_theme else 'dark' }} px-2 fs-5
+                  d-flex align-items-center" id="delete_post_btn"
+          >
+            <h6 class="pe-2 m-0">
+              Delete article
+            </h6>
+            <img src="../../static/images/{{ 'light' if is_light_theme else 'dark' }}/trash_bin.png" alt="trash_bin"
+                 width="30" class="m-0 p-0">
+          </button>
+        </form>
+      {% endif %}
     </div>
   </div>
 </div>
 <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous">
+</script>
+<script>
+  const form = document.getElementById('delete_post_form');
+  const btn = document.getElementById('delete_post_btn')
+
+  btn.onclick = event => {
+  event.preventDefault(); // Останавливаем стандартное поведение
+  let form_data = new FormData();
+
+  form_data.append('author_id', {{ article.id }});
+  form_data.append('post_id', {{ current_user.id }});
+
+  fetch(form.action, {
+    method: 'POST', // Используем метод POST
+    body: form_data // Собираем данные формы
+  })
+  .then(response => {
+      if (response.status == 422){
+        alert('Make sure all fields are completed');
+      }
+      else if (response.status == 401){
+        alert('You are not authorized. Please return after authorization');
+      }
+      else {
+        return response.json();
+      }
+    })
+    .then(data => {
+      if (data){
+        window.location.href = "../../profile/?is_article_deleted=true";
+      }
+    }) // Обработка отклика
+  .catch(error => console.error('Ошибка:', error)); // Обработка потенциальных ошибок
+};
 </script>
 </body>
 </html>

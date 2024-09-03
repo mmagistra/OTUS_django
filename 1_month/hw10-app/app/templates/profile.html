@@ -9,112 +9,96 @@
         crossorigin="anonymous">
   <title>All articles</title>
 </head>
+{% if is_light_theme %}
+<body>
+{% else %}
 <body data-bs-theme="dark">
+{% endif %}
 {% include "nav.html" %}
 <div class="container-xl my-5">
+  <div id="liveAlertPlaceholder" class="row justify-content-center">
+    {% if is_new_article_added %}
+      <div class="alert alert-success d-flex p-2 align-items-center justify-content-center col-6" role="alert">
+        <h3>
+          Your new article has been added
+        </h3>
+      </div>
+    {% endif %}
+    {% if is_article_deleted %}
+      <div class="alert alert-warning d-flex p-2 align-items-center justify-content-center col-6" role="alert">
+        <h3>
+          Article was successfully deleted
+        </h3>
+      </div>
+    {% endif %}
+  </div>
   <div class="row justify-content-evenly">
     <h2 class="text-center col">
       Here are all your articles
     </h2>
   </div>
-  <div class="row justify-content-evenly my-5">
-    <div class="card col-3">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="article.html" class="btn btn-primary">Go somewhere</a>
+
+  {% if card is defined %}
+    <div class="row justify-content-evenly my-5" style="height: 400px;">
+      <div class="card col-3 text-center d-flex justify-content-center border-success">
+        <div class="align-self-center">
+          <form action="../new_article" method="GET">
+            <button type="submit" class="btn btn-{{ 'light' if is_light_theme else 'dark' }} mx-2 p-0">
+              <img
+                      class=""
+                      src="../static/images/{{ 'light' if is_light_theme else 'dark' }}/plus_icon_success.png"
+                      alt="new card"
+                      width="30"
+              >
+            </button>
+            <h5 class="text-success mt-1">
+              Add your new article!
+            </h5>
+          </form>
+        </div>
       </div>
     </div>
-    <div class="card col-3">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="article.html" class="btn btn-primary">Go somewhere</a>
+  {% endif %}
+  {% for card in cards %}
+    {% if (loop.index0 % 3 == 0) %}
+      {% if loop.first %}
+        <div class="row justify-content-evenly my-5">
+          <div class="card col-3 text-center d-flex justify-content-center border-success">
+            <div class="align-self-center">
+              <form action="../new_article" method="GET">
+                <button type="submit" class="btn btn-{{ 'light' if is_light_theme else 'dark' }} mx-2 p-0">
+                  <img
+                        class=""
+                        src="../static/images/{{ 'light' if is_light_theme else 'dark' }}/plus_icon_success.png"
+                        alt="new card"
+                        width="30"
+                >
+                </button>
+                <h5 class="text-success">
+                  Add new article
+                </h5>
+              </form>
+            </div>
+          </div>
+      {% else %}
+        <div class="row justify-content-evenly my-5">
+          {% include "article_card.html" %}
+      {% endif %}
+      {% if loop.last %}
+        </div>
+      {% endif %}
+    {% elif (loop.index0 % 3 == 1) %}
+      {% include "article_card.html" %}
+      {% if loop.last %}
+        </div>
+      {% endif %}
+    {% elif (loop.index0 % 3 == 2) %}
+      {% include "article_card.html" %}
       </div>
-    </div>
-    <div class="card col-3">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="article.html" class="btn btn-primary">Go somewhere</a>
-      </div>
-    </div>
-  </div>
-  <div class="row justify-content-evenly my-5">
-    <div class="card col-3">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="article.html" class="btn btn-primary">Go somewhere</a>
-      </div>
-    </div>
-    <div class="card col-3">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="article.html" class="btn btn-primary">Go somewhere</a>
-      </div>
-    </div>
-    <div class="card col-3">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="article.html" class="btn btn-primary">Go somewhere</a>
-      </div>
-    </div>
-  </div>
-  <div class="row justify-content-evenly my-5">
-    <div class="card col-3">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="article.html" class="btn btn-primary">Go somewhere</a>
-      </div>
-    </div>
-    <div class="card col-3">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="article.html" class="btn btn-primary">Go somewhere</a>
-      </div>
-    </div>
-    <div class="card col-3">
-      <div class="card-body">
-        <h5 class="card-title">Card title</h5>
-        <h6 class="card-subtitle mb-2 text-body-secondary">Card subtitle</h6>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's
-          content.</p>
-        <a href="article.html" class="btn btn-primary">Go somewhere</a>
-      </div>
-    </div>
-  </div>
-  <div>
-    <nav aria-label="Home page navigation" class="row justify-content-center ps-3">
-      <ul class="pagination col-4 justify-content-center">
-        <li class="page-item"><a class="page-link" href="#"><<</a></li>
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item"><a class="page-link" href="#">>></a></li>
-      </ul>
-    </nav>
-  </div>
+    {% else %}
+      {% include "article_card.html" %}
+    {% endif %}
+  {% endfor %}
 </div>
 <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"

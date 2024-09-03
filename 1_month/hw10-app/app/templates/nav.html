@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-sm bg-body-tertiary sticky-top">
   <div class="container-fluid">
-    <a class="navbar-brand" href="../home">
-      <img src="/static/images/{{'light' if dark_code else 'dark'}}/icon.png" alt="logo" width="30" class="mx-2">
+    <a class="navbar-brand" href="{{ '../'*(level-1) if level is defined else '' }}../home">
+      <img src="/static/images/{{'light' if is_light_theme else 'dark'}}/icon.png" alt="logo" width="30" class="mx-2">
       Boardgames
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -11,18 +11,43 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
       <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
         <li class="nav-item">
-          <a class="nav-link py-0 {{'active fs-5' if about_active}}" aria-current="page" href="../about">About</a>
+          <a class="nav-link py-0 {{'active fs-5' if about_active}}" aria-current="page"
+             href="{{ '../'*(level-1) if level is defined else '' }}../about">About</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link py-0 {{'active fs-5' if home_active}}" aria-current="page" href="../home">Home</a>
+          <a class="nav-link py-0 {{'active fs-5' if home_active}}" aria-current="page"
+             href="{{ '../'*(level-1) if level is defined else '' }}../home">Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link py-0 {{'active fs-5' if profile_active}}" href="../profile">Your articles</a>
+          <a class="nav-link py-0 {{'active fs-5' if profile_active}}"
+             href="{{ '../'*(level-1) if level is defined else '' }}../profile">Your articles</a>
         </li>
       </ul>
     </div>
-    <div class="navbar-text fs-6 text-end mx-5 p-0">
-      <a class="link link-underline link-underline-opacity-0 {{'active fs-5' if login_active}}" href="../login">Login</a>
+    <div class="navbar-text fs-6 text-end mx-2 p-0">
+      <a class="link link-underline link-underline-opacity-0 {{'active fs-5' if login_active else 'text-secondary-emphasis'}}"
+         href="{{ '../'*(level-1) if level is defined else '' }}../login">
+        {{ current_user.username }}
+      </a>
     </div>
+    <form action="..{{ '/..'*(level-1) if level is defined else '' }}/api/theme/change_theme" method="post"
+          id="change_theme_form">
+      <button type="submit" class="btn btn-{{ 'light' if is_light_theme else 'dark' }} mx-2">
+        <img src="..{{ '/..'*(level-1) if level is defined else '' }}/static/images/{{ 'light' if is_light_theme else 'dark' }}/theme_icon.png"
+             alt="theme" width="30">
+      </button>
+    </form>
   </div>
 </nav>
+<script>
+  document.getElementById('change_theme_form').onsubmit = event => {
+  event.preventDefault(); // Останавливаем стандартное поведение
+  fetch(event.target.action, {
+    method: 'POST', // Используем метод POST
+    body: new FormData(event.target) // Собираем данные формы
+  })
+  .then(response => response.json())
+  .then(data => location.reload()) // Обработка отклика
+  .catch(error => console.error('Ошибка:', error)); // Обработка потенциальных ошибок
+};
+</script>

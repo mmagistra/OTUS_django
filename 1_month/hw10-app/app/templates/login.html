@@ -9,24 +9,28 @@
         crossorigin="anonymous">
   <title>All articles</title>
 </head>
+{% if is_light_theme %}
+<body>
+{% else %}
 <body data-bs-theme="dark">
+{% endif %}
 {% include "nav.html" %}
 <div class="container-sm my-5">
   <div class="row justify-content-evenly">
-    <form class="col-3">
+    <form action="../api/authorization/" class="col-3" id="user_data_form">
       <div class="mb-3">
-        <label for="exampleInputEmail1" class="form-label">Email address</label>
-        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-        <div id="emailHelp" class="form-text">Enter your details and click one of the buttons.</div>
+        <label for="InputUsername" class="form-label">User name</label>
+        <input type="text" class="form-control" id="InputUsername" aria-describedby="textHelp">
+        <div id="usernameHelp" class="form-text">Enter your details and click one of the buttons.</div>
       </div>
       <div class="mb-3">
-        <label for="exampleInputPassword1" class="form-label">Password</label>
-        <input type="password" class="form-control" id="exampleInputPassword1">
+        <label for="InputPassword" class="form-label ">Password</label>
+        <input type="password" class="form-control" id="InputPassword">
       </div>
       <div class="container-sm">
         <div class="row justify-content-evenly">
-          <button type="submit" class="btn btn-primary">Authorize</button>
-          <button type="submit" class="btn btn-primary mt-3">Registration</button>
+          <button type="submit" class="btn btn-primary" id="authorize_btn">Authorize</button>
+          <button type="submit" class="btn btn-primary mt-3" id="register_btn">Registration</button>
         </div>
       </div>
     </form>
@@ -35,6 +39,83 @@
 <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous">
+</script>
+<script>
+  const auth_btn = document.getElementById('authorize_btn')
+  const reg_btn = document.getElementById('register_btn')
+
+  const form = document.getElementById('user_data_form')
+
+  const username = document.getElementById('InputUsername')
+  const username_help = document.getElementById('usernameHelp')
+  const password = document.getElementById('InputPassword')
+
+  auth_btn.onclick = event => {
+    event.preventDefault(); // Останавливаем стандартное поведение
+    let form_data = new FormData();
+    form_data.append('username', username.value);
+    form_data.append('password', password.value);
+
+    fetch(form.action+'token/', {
+      method: 'POST', // Используем метод POST
+      body: form_data // Собираем данные формы
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (!data.access_token){
+        username_help.classList.add('text-danger-emphasis');
+        username_help.textContent = 'Username or password is incorrect';
+
+        username.classList.add('is-invalid');
+        password.classList.add('is-invalid');
+      }
+      else {
+        let token = data.access_token;
+        document.cookie = 'access_token='+encodeURIComponent(token)+'; path=/;';
+        location.reload();
+      }
+    }) // Обработка отклика
+    .catch(error => console.error('Ошибка:', error)); // Обработка потенциальных ошибок
+  };
+
+  reg_btn.onclick = event => {
+    event.preventDefault(); // Останавливаем стандартное поведение
+    let form_data = new FormData();
+    form_data.append('username', username.value);
+    form_data.append('password', password.value);
+
+    // registration
+    fetch(form.action+'registrate/', {
+      method: 'POST', // Используем метод POST
+      body: form_data // Собираем данные формы
+    })
+    .then(response => response.json()) // Обработка отклика
+    .then(data => {
+      if (data == 409) {
+        alert('User with the same username already exists. Try to login...')
+      }
+      fetch(form.action+'token/', {
+        method: 'POST', // Используем метод POST
+        body: form_data // Собираем данные формы
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (!data.access_token){
+          username_help.classList.add('text-danger-emphasis');
+          username_help.textContent = 'Username or password is incorrect';
+
+          username.classList.add('is-invalid');
+          password.classList.add('is-invalid');
+        }
+        else {
+          let token = data.access_token;
+          document.cookie = 'access_token='+encodeURIComponent(token)+'; path=/;';
+          location.reload();
+        }
+      })
+    })
+    .catch(error => console.log('Ошибка:', error)); // Обработка потенциальных ошибок
+  };
 </script>
 </body>
 </html>

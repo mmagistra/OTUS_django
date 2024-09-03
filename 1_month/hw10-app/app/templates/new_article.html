@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block title %} New article {% endblock %}
+{% block content %}
+
+<div class="container-xl my-5">
+  <div class="row justify-content-evenly">
+    <div class="card text-center col">
+
+      <form action="../api/article/create" method="POST" id="main_form">
+        <div class="card-header d-flex justify-content-center">
+          <input type="text" class="form-control w-25" id="InputTitle" placeholder="Article's title"
+                 aria-label="Article's title">
+        </div>
+        <div class="card-body">
+          <div class="card-subtitle d-flex justify-content-center">
+            <input type="text" class="form-control w-75 mb-3 text-body-secondary" id="InputSubTitle"
+                   placeholder="Article's subtitle"
+                   aria-label="Article's subtitle">
+          </div>
+          <div>
+            <textarea class="form-control" id="InputText" rows="12" placeholder="Article's text"></textarea>
+          </div>
+        </div>
+      </form>
+      <div class="card-footer text-body-secondary d-flex justify-content-between">
+        <div class="dropend">
+          <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  data-bs-auto-close="outside">
+            Article's tags
+          </button>
+          <form class="dropdown-menu p-4" id="tags_form">
+            <div style="max-height:40vh; overflow-y: scroll">
+              {% for tag in tags%}
+              <div class="input-group input-group-sm mb-3" style="width: 15vw">
+                <div class="input-group-text">
+                  <input class="form-check-input mt-0" type="checkbox" value="" id="check_{{ loop.index }}">
+                </div>
+                <input type="text" class="form-control text-truncate" value="{{ tag }}" disabled="disabled"
+                       id="tag_{{ loop.index }}">
+              </div>
+              {% endfor%}
+            </div>
+          </form>
+        </div>
+        <button type="submit" class="btn btn-success" id="submit_btn">Create new article</button>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  const main_form = document.getElementById('main_form');
+  const tags_form = document.getElementById('tags_form');
+
+  const btn = document.getElementById('submit_btn');
+
+  const input_title = document.getElementById('InputTitle');
+  const input_subtitle = document.getElementById('InputSubTitle');
+  const input_text = document.getElementById('InputText');
+
+  btn.onclick = event => {
+    event.preventDefault();
+    let form_data = new FormData();
+
+    form_data.append('title', input_title.value);
+    form_data.append('subtitle', input_subtitle.value);
+    form_data.append('text', input_text.value);
+
+    {% for tag in tags %}
+    if (document.getElementById('check_{{ loop.index }}').checked){
+      form_data.append('tags', document.getElementById('tag_{{ loop.index }}').value);
+    }
+    {% endfor %}
+
+    /*
+    for(let [name, value] of form_data) {
+      console.log(`${name} = ${value}`);
+    }
+    */
+
+    fetch(main_form.action, {
+      method: 'POST', // Используем метод POST
+      body: form_data // Собираем данные формы
+    })
+    .then(response => {
+      if (response.status == 422){
+        alert('Make sure all fields are completed');
+      }
+      else if (response.status == 401){
+        alert('You are not authorized. Please return after authorization');
+      }
+      else if (response.status == 500){
+        console.log(response);
+      }
+      else {
+        return response.json();
+      }
+    })
+    .then(data => {
+      if (data){
+        window.location.href = "../profile/?is_new_article_added=true";
+      }
+    }) // Обработка отклика
+    .catch(error => console.error('Ошибка:', error)); // Обработка потенциальных ошибок
+  }
+</script>
+
+{% endblock %}

@@ -9,49 +9,84 @@
         crossorigin="anonymous">
   <title>All articles</title>
 </head>
+{% if is_light_theme %}
+<body>
+{% else %}
 <body data-bs-theme="dark">
+{% endif %}
 {% include "nav.html" %}
 <div class="container-sm my-5">
   <div class="row justify-content-evenly">
-    <form class="d-flex col-3" role="search">
-      <input class="form-control me-2" type="search" placeholder="Search by tag" aria-label="Search">
-      <button class="btn btn-outline-success" type="submit">Search</button>
-    </form>
+    <div class="d-flex col-3" role="search">
+      <div class="dropdown">
+          <button type="button" class="btn btn-outline-info dropdown-toggle mx-2 px-5" data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  data-bs-auto-close="outside">
+            Article's tags
+          </button>
+          <form class="dropdown-menu p-4" id="tags_form">
+            <div style="max-height:40vh; overflow-y: scroll">
+              {% for tag in tags%}
+              <div class="input-group input-group-sm mb-2" style="width: 15vw">
+                <div class="input-group-text">
+                  <input class="form-check-input mt-0" type="checkbox" value="" id="check_{{ loop.index }}" {{ 'checked' if tag in allow_tags }}>
+                </div>
+                <input type="text" class="form-control text-truncate" value="{{ tag }}" disabled="disabled"
+                       id="tag_{{ loop.index }}">
+              </div>
+              {% endfor%}
+            </div>
+          </form>
+        </div>
+      <button class="btn btn-outline-success" type="submit" id="search_btn">Search</button>
+    </div>
   </div>
 </div>
 <div class="container-xl">
-  <div class="row justify-content-evenly my-5">
-    {% include "article_card.html" %}
-    {% include "article_card.html" %}
-    {% include "article_card.html" %}
-  </div>
-  <div class="row justify-content-evenly my-5">
-    {% include "article_card.html" %}
-    {% include "article_card.html" %}
-    {% include "article_card.html" %}
-  </div>
-  <div class="row justify-content-evenly my-5">
-    {% include "article_card.html" %}
-    {% include "article_card.html" %}
-    {% include "article_card.html" %}
-  </div>
-  <div class="row justify-content-evenly my-5">
-    {% include "article_card.html" %}
-    {% include "article_card.html" %}
-    {% include "article_card.html" %}
-  </div>
-  <div>
-    <nav aria-label="Home page navigation" class="row justify-content-center ps-3">
-      <ul class="pagination col-4 justify-content-center">
-        <li class="page-item"><a class="page-link" href="#"><<</a></li>
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        <li class="page-item"><a class="page-link" href="#">>></a></li>
-      </ul>
-    </nav>
-  </div>
+  {% for card in cards %}
+    {% if (loop.index0 % 3 == 0) %}
+      <div class="row justify-content-evenly my-5">
+      {% include "article_card.html" %}
+      {% if loop.last %}
+        </div>
+      {% endif %}
+    {% elif (loop.index0 % 3 == 1) %}
+      {% include "article_card.html" %}
+      {% if loop.last %}
+        </div>
+      {% endif %}
+    {% elif (loop.index0 % 3 == 2) %}
+      {% include "article_card.html" %}
+      </div>
+    {% else %}
+      {% include "article_card.html" %}
+    {% endif %}
+  {% endfor %}
 </div>
+<script>
+  const tags_form = document.getElementById('tags_form');
+  const btn = document.getElementById('search_btn');
+
+  btn.onclick = event =>{
+    event.preventDefault();
+
+    let args = "";
+
+    {% for tag in tags %}
+    if (document.getElementById('check_{{ loop.index }}').checked){
+      args = args + "tags=" + document.getElementById('tag_{{ loop.index }}').value + "&"
+    }
+    {% endfor %}
+
+    if (args){
+      args = args.slice(0, -1);
+    }
+
+    args = decodeURIComponent(args);
+
+    window.location.href = "./?"+args;
+  }
+</script>
 <script src="https://unpkg.com/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
         crossorigin="anonymous">

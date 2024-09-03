@@ -5,7 +5,7 @@ from sqlalchemy import String, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .base import Base
-from .assotiation_table import association_table
+from .assotiation_table import AssociationTable
 from .tag import Tag
 
 
@@ -16,7 +16,7 @@ class Post(Base):
     text: Mapped[str] = mapped_column()
     create_data: Mapped[datetime] = mapped_column()
 
-    tags: Mapped[List[Tag]] = relationship(secondary=association_table)
+    tags: Mapped[List[Tag]] = relationship(secondary=AssociationTable)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
     def __str__(self):
